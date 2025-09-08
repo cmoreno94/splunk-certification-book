@@ -1,4 +1,4 @@
-unit_id,advertise
+id,advertise
 1,Amazon
 2,Walmart
 3,Ebay
@@ -3399,3 +3399,4 @@ unit_id,advertise
 3398,Ebay
 3399,Ebay
 3400,Jabong
+
