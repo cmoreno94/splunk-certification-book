@@ -1,0 +1,119 @@
+<dashboard version="1.1" theme="light">
+  <label>Web Summary</label>
+  <description>The following dashboard shows a general overview of the web.</description>
+  <row>
+    <panel>
+      <single>
+        <title>Total Transaction Request on the Web Page</title>
+        <search>
+          <query>index=transactions sourcetype=transaction_data
+| stats count</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Total Transaction Request from Western USA</title>
+        <search>
+          <query>index=transactions sourcetype=transaction_data
+| eval region=case(city in("New york", "Chicago", "Boston", "Washington D.C."), "Eastern USA", city in("San Francisco", "Seattle"), "Western USA")
+| search region="Western USA"
+| stats count</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Total Transaction Request from Eastern USA</title>
+        <search>
+          <query>index=transactions sourcetype=transaction_data
+| eval region=case(city in("New york", "Chicago", "Boston", "Washington D.C."), "Eastern USA", city in("San Francisco", "Seattle"), "Western USA")
+| search region="Eastern USA"
+| stats count</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Successful Transaction Requests on the Web Page</title>
+        <search>
+          <query>index=transactions sourcetype=transaction_data status=200
+| stats count</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <chart>
+        <title>Successful Transaction Requests by Western US Cities</title>
+        <search>
+          <query>index=transactions sourcetype=transaction_data status=200
+| eval region=case(city in("New york", "Chicago", "Boston", "Washington D.C."), "Eastern USA", city in("San Francisco", "Seattle"), "Western USA")
+| search region="Western USA"
+| stats count by city</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Successful Transaction Requests by Eastern US Cities</title>
+        <search>
+          <query>index=transactions sourcetype=transaction_data status=200
+| eval region=case(city in("New york", "Chicago", "Boston", "Washington D.C."), "Eastern USA", city in("San Francisco", "Seattle"), "Western USA")
+| search region="Eastern USA"
+| stats count by city</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>HTTP Status Codes by time</title>
+        <search>
+          <query>index=transactions sourcetype=transaction_data status=*
+| timechart count span=1d by status</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>HTTP Methods by time</title>
+        <search>
+          <query>index=transactions sourcetype=transaction_data method=*
+| timechart count span=1d by method</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>
