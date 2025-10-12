@@ -1,0 +1,373 @@
+{
+    "title": "Web Summary (Studio)",
+    "description": "The following dashboard shows a general overview of the web.",
+    "inputs": {
+        "input_QmBwPYru": {
+            "options": {
+                "defaultValue": "*",
+                "items": [
+                    {
+                        "label": "All",
+                        "value": "*"
+                    },
+                    {
+                        "label": "Get",
+                        "value": "get"
+                    },
+                    {
+                        "label": "Post",
+                        "value": "post"
+                    }
+                ],
+                "token": "method"
+            },
+            "title": "Method",
+            "type": "input.dropdown"
+        },
+        "input_V1PTFrEd": {
+            "context": {
+                "formattedConfig": {
+                    "number": {
+                        "prefix": ""
+                    }
+                },
+                "formattedStatics": ">statics | formatByType(formattedConfig)",
+                "label": ">primary | seriesByName(\"status\") | renameSeries(\"label\") | formatByType(formattedConfig)",
+                "statics": [
+                    [
+                        "All"
+                    ],
+                    [
+                        "*"
+                    ]
+                ],
+                "value": ">primary | seriesByName(\"status\") | renameSeries(\"value\") | formatByType(formattedConfig)"
+            },
+            "dataSources": {
+                "primary": "ds_xEyrsihR"
+            },
+            "options": {
+                "defaultValue": [
+                    "*"
+                ],
+                "items": ">frame(label, value) | prepend(formattedStatics) | objects()",
+                "token": "http_status"
+            },
+            "title": "HTTP Status",
+            "type": "input.multiselect"
+        },
+        "input_sqH3eajk": {
+            "options": {
+                "defaultValue": "0,",
+                "token": "time"
+            },
+            "title": "Time Range",
+            "type": "input.timerange"
+        }
+    },
+    "defaults": {
+        "dataSources": {
+            "ds.search": {
+                "options": {
+                    "queryParameters": {}
+                }
+            }
+        },
+        "visualizations": {
+            "global": {
+                "showProgressBar": true
+            }
+        }
+    },
+    "visualizations": {
+        "viz_HejENik3": {
+            "dataSources": {
+                "primary": "ds_RUm6CDNi"
+            },
+            "options": {
+                "legendTruncation": "ellipsisMiddle",
+                "showRoundedY2AxisLabels": false,
+                "showY2MajorGridLines": true,
+                "y2AxisAbbreviation": "off",
+                "yAxisAbbreviation": "off"
+            },
+            "showProgressBar": true,
+            "title": "HTTP Status Codes by time",
+            "type": "splunk.line"
+        },
+        "viz_Obx2jwh9": {
+            "dataSources": {
+                "primary": "ds_LsBC0DxN"
+            },
+            "options": {},
+            "title": "Successful Transaction Requests by Eastern US Cities",
+            "type": "splunk.pie"
+        },
+        "viz_YndmBpcv": {
+            "dataSources": {
+                "primary": "ds_RyPHb61Y"
+            },
+            "description": "**Filters applied**",
+            "title": "Total Transaction Request on the Web Page",
+            "type": "splunk.singlevalue"
+        },
+        "viz_aZ3J6JfY": {
+            "dataSources": {
+                "primary": "ds_tvJlH2Gc"
+            },
+            "description": "**Filters applied**",
+            "title": "Total Transaction Request from Eastern USA",
+            "type": "splunk.singlevalue"
+        },
+        "viz_tNrTO9ke": {
+            "dataSources": {
+                "primary": "ds_lS3MIUAp"
+            },
+            "options": {},
+            "title": "Successful Transaction Requests on the Web Page",
+            "type": "splunk.singlevalue"
+        },
+        "viz_unJUeyt4": {
+            "dataSources": {
+                "primary": "ds_ipx6q54X"
+            },
+            "options": {},
+            "title": "Successful Transaction Requests by Western US Cities",
+            "type": "splunk.pie"
+        },
+        "viz_vmbAO0cm": {
+            "dataSources": {
+                "primary": "ds_43sSJSXt"
+            },
+            "description": "**Filters applied**",
+            "title": "Total Transaction Request from Western USA",
+            "type": "splunk.singlevalue"
+        },
+        "viz_yC1X8oXB": {
+            "dataSources": {
+                "primary": "ds_rYDhnbyn"
+            },
+            "options": {
+                "legendTruncation": "ellipsisMiddle",
+                "showRoundedY2AxisLabels": false,
+                "showY2MajorGridLines": true,
+                "y2AxisAbbreviation": "off",
+                "yAxisAbbreviation": "off"
+            },
+            "title": "HTTP Methods by time",
+            "type": "splunk.line"
+        }
+    },
+    "dataSources": {
+        "ds_43sSJSXt": {
+            "name": "Total Transaction Request from Western USA",
+            "options": {
+                "query": "index=transactions sourcetype=transaction_data method=$method$ status IN ($http_status$)\n| eval region=case(city in(\"New york\", \"Chicago\", \"Boston\", \"Washington D.C.\"), \"Eastern USA\", city in(\"San Francisco\", \"Seattle\"), \"Western USA\")\n| search region=\"Western USA\"\n| stats count",
+                "queryParameters": {
+                    "earliest": "$time.earliest$",
+                    "latest": "$time.latest$"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_LsBC0DxN": {
+            "name": "Successful Transaction Requests by Eastern US Cities",
+            "options": {
+                "query": "index=transactions sourcetype=transaction_data status=200\n| eval region=case(city in(\"New york\", \"Chicago\", \"Boston\", \"Washington D.C.\"), \"Eastern USA\", city in(\"San Francisco\", \"Seattle\"), \"Western USA\")\n| search region=\"Eastern USA\"\n| stats count by city",
+                "queryParameters": {
+                    "earliest": "$time.earliest$",
+                    "latest": "$time.latest$"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_RUm6CDNi": {
+            "name": "HTTP Status Codes by time",
+            "options": {
+                "query": "index=transactions sourcetype=transaction_data status=*\n| timechart count span=1d by status",
+                "queryParameters": {
+                    "earliest": "$time.earliest$",
+                    "latest": "$time.latest$"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_RyPHb61Y": {
+            "name": "Total Transaction Request on the Web Page",
+            "options": {
+                "query": "index=transactions sourcetype=transaction_data method=$method$ status IN ($http_status$)\n| stats count",
+                "queryParameters": {
+                    "earliest": "0",
+                    "latest": ""
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_ipx6q54X": {
+            "name": "Successful Transaction Requests by Western US Cities",
+            "options": {
+                "query": "index=transactions sourcetype=transaction_data status=200\n| eval region=case(city in(\"New york\", \"Chicago\", \"Boston\", \"Washington D.C.\"), \"Eastern USA\", city in(\"San Francisco\", \"Seattle\"), \"Western USA\")\n| search region=\"Western USA\"\n| stats count by city",
+                "queryParameters": {
+                    "earliest": "$time.earliest$",
+                    "latest": "$time.latest$"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_lS3MIUAp": {
+            "name": "Successful Transaction Requests on the Web Page",
+            "options": {
+                "query": "index=transactions sourcetype=transaction_data status=200\n| stats count",
+                "queryParameters": {
+                    "earliest": "$time.earliest$",
+                    "latest": "$time.latest$"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_rYDhnbyn": {
+            "name": "HTTP Methods by time",
+            "options": {
+                "query": "index=transactions sourcetype=transaction_data method=*\n| timechart count span=1d by method",
+                "queryParameters": {
+                    "earliest": "$time.earliest$",
+                    "latest": "$time.latest$"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_tvJlH2Gc": {
+            "name": "Total Transaction Request from Eastern USA",
+            "options": {
+                "query": "index=transactions sourcetype=transaction_data method=$method$ status IN ($http_status$)\n| eval region=case(city in(\"New york\", \"Chicago\", \"Boston\", \"Washington D.C.\"), \"Eastern USA\", city in(\"San Francisco\", \"Seattle\"), \"Western USA\")\n| search region=\"Eastern USA\"\n| stats count",
+                "queryParameters": {
+                    "earliest": "$time.earliest$",
+                    "latest": "$time.latest$"
+                }
+            },
+            "type": "ds.search"
+        },
+        "ds_xEyrsihR": {
+            "name": "Get HTTP status",
+            "options": {
+                "query": "index=transactions sourcetype=transaction_data status=* status!=\"status\"\n| stats count by status\n| fields status",
+                "queryParameters": {
+                    "earliest": "$time.earliest$",
+                    "latest": "$time.latest$"
+                }
+            },
+            "type": "ds.search"
+        }
+    },
+    "layout": {
+        "globalInputs": [
+            "input_sqH3eajk",
+            "input_QmBwPYru",
+            "input_V1PTFrEd"
+        ],
+        "layoutDefinitions": {
+            "layout_1": {
+                "options": {
+                    "height": 750,
+                    "width": 1440
+                },
+                "structure": [
+                    {
+                        "item": "viz_YndmBpcv",
+                        "position": {
+                            "h": 250,
+                            "w": 481,
+                            "x": 0,
+                            "y": 0
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_tNrTO9ke",
+                        "position": {
+                            "h": 250,
+                            "w": 481,
+                            "x": 0,
+                            "y": 250
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_HejENik3",
+                        "position": {
+                            "h": 250,
+                            "w": 721,
+                            "x": 0,
+                            "y": 500
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_vmbAO0cm",
+                        "position": {
+                            "h": 250,
+                            "w": 478,
+                            "x": 481,
+                            "y": 0
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_unJUeyt4",
+                        "position": {
+                            "h": 250,
+                            "w": 478,
+                            "x": 481,
+                            "y": 250
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_yC1X8oXB",
+                        "position": {
+                            "h": 250,
+                            "w": 719,
+                            "x": 721,
+                            "y": 500
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_aZ3J6JfY",
+                        "position": {
+                            "h": 250,
+                            "w": 481,
+                            "x": 959,
+                            "y": 0
+                        },
+                        "type": "block"
+                    },
+                    {
+                        "item": "viz_Obx2jwh9",
+                        "position": {
+                            "h": 250,
+                            "w": 481,
+                            "x": 959,
+                            "y": 250
+                        },
+                        "type": "block"
+                    }
+                ],
+                "type": "grid"
+            }
+        },
+        "options": {},
+        "tabs": {
+            "items": [
+                {
+                    "label": "New tab",
+                    "layoutId": "layout_1"
+                }
+            ]
+        }
+    },
+    "applicationProperties": {
+        "hideEdit": false,
+        "hideExport": false
+    }
+}
